@@ -181,80 +181,48 @@ class User {
 
   async isStoryFavorite(storyId){
 
-    // console.log("this.username", this.username);
-    // // console.log('Story ID: ', storyId);
-    // console.log("url: ", `${BASE_URL}/users/${this.username}`);
-    // console.log("token: ", this.loginToken);
-
     const res = await axios.get(`${BASE_URL}/users/${this.username}`,{params: {token: this.loginToken}});
 
     const userFavorites = res.data.user.favorites;
-// console.log
-    // console.log("res: ",res);
+
 
     for(let userFavorite of userFavorites){
 
       if(userFavorite.storyId==storyId){
-      //   console.log("user favorite: ", userFavorite.storyId);
-      // console.log("current Story: ", currentStory.storyId);
-      //   console.log("Post is user favorite");
+
         return true;
       }
 
     }
     return false;
-
   }
 
   async getFavorites(){
 
     const res = await axios.get(`${BASE_URL}/users/${this.username}`,{params: {token:this.loginToken}});
-
-    console.log("Favorite Stories: ", res.data.user.favorites);
-
     const favorites = res.data.user.favorites;
     
     return favorites;
-
-
   }
 
   async getStoryUsername(currentStory){
-    // console.log("this.username", this.username);
-    // console.log('Story ID: ', currentStory.storyId);
-    // console.log("url: ", `${BASE_URL}/users/${this.username}`);
-    // console.log("token: ", this.loginToken);
 
-    const res = await axios.get(`${BASE_URL}/stories/${currentStory.storyId}`,{params: {token: this.loginToken}});
-    storyUs
-
-    console.log( "story username: ",res.data.story.username);
-
+    await axios.get(`${BASE_URL}/stories/${currentStory.storyId}`,{params: {token: this.loginToken}});
   }
 
   async addFavorite(storyId){
 
-    // console.log("this.username", this.username);
-    // console.log('Story ID: ', storyId);
-    // console.log("url: ", `${BASE_URL}/users/${this.username}/favorites/${storyId}`);
-    // console.log("token: ", this.loginToken);
-
-    const response = await axios.post(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, {token:this.loginToken});
-    // console.log("res: ", response);
+    await axios.post(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, {token:this.loginToken});
   }
 
   async removeFavorite(storyId){
-    // console.log("this.username", this.username);
-    // console.log('Story ID: ', storyId);
-    // console.log("url: ", `${BASE_URL}/users/${this.username}/favorites/${storyId}`);
-    // console.log("token: ", this.loginToken);
-    const response = await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, {params: {token:this.loginToken}});
 
+    await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, {params: {token:this.loginToken}});
   }
+
   async deleteStory(storyId){
-    const response = await axios.delete(`${BASE_URL}/stories/${storyId}`, {params: {token:this.loginToken}});
 
-
+    await axios.delete(`${BASE_URL}/stories/${storyId}`, {params: {token:this.loginToken}});
   }
 }
 

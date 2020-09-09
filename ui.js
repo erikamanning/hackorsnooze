@@ -232,9 +232,7 @@ $(async function() {
 
   function generateOwnerStory(story){
 
-    // console.log(checkIfFavorite(story))
     const isFavorite = checkIfFavorite(story) ? FAVORITE : NOT_FAVORITE;
-    console.log("isFavorite: ",isFavorite);
     const ownerStory = generateStoryHTML(story);
     ownerStory.css("list-style-type","none");
     ownerStory.prepend(addFavoriteIcon(isFavorite));
@@ -258,22 +256,6 @@ $(async function() {
       }
     }
     return result;
-  }
-  
-  function markAllListFavorites(list){
-
-    for(let story of $(list).children()){
-
-      for(let favorite of currentUser.favorites){
-
-        if($(story).prop("id")==favorite.storyId){
-
-          // console.log("found favorite story!")
-          $(story).find('.favorited').removeClass("far");
-          $(story).find('.favorited').addClass("fas");
-        }
-      }
-    }
   }
 
   /**
@@ -365,7 +347,7 @@ $(async function() {
     console.log($author.val());
 
     const userStories = await StoryList.getStories();
-    const newPost = await userStories.addStory(currentUser, {
+    await userStories.addStory(currentUser, {
                               
       author: $author.val(),
       title:$title.val(),
@@ -378,10 +360,6 @@ $(async function() {
 
     $submitForm.hide();
       
-    // if(newPost){
-
-    //   location.reload(); 
-    // }
   });
 
 
@@ -499,9 +477,7 @@ $(async function() {
     }
     else if($submitForm.is(":hidden")){
       $submitForm.show();
-    }
-    
-    
+    }    
   });
 
   $navUserName.on("click",function(){
