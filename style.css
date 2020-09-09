@@ -34,7 +34,12 @@ a:hover {
 .hidden {
   display: none;
 }
-
+.starFilled{
+  background-color: yellow;
+}
+.starEmpty{
+  background-color: none;
+}
 
 
 nav {
@@ -53,6 +58,10 @@ nav {
   font-size: 0.85rem;
   margin: 0 3px;
 }
+/* nav-left
+.nav-left {
+  /* margin-right: auto; */
+
 
 .nav-right {
   margin-left: auto;

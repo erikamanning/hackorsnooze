@@ -47,6 +47,28 @@ class StoryList {
     // TODO - Implement this functions!
     // this function should return the newly created story so it can be used in
     // the script.js file where it will be appended to the DOM
+
+    // static async create(author, title, url, token) {
+      const response = await axios.post(`${BASE_URL}/stories`, {
+        token:user.loginToken,
+        story: newStory
+      });
+  
+      // build a story User instance from the API response
+      const story = new Story({
+  
+        author    : response.data.story.author,
+        title     : response.data.story.title,
+        url       : response.data.story.url,
+        username  : response.data.story.username,
+        storyId   : response.data.story.storyId,
+        createdAt : response.data.story.createdAt,
+        updatedAt : response.data.story.updatedAt
+  
+      });
+  
+      return story;
+
   }
 }
 
@@ -57,6 +79,7 @@ class StoryList {
  */
 
 class User {
+
   constructor(userObj) {
     this.username = userObj.username;
     this.name = userObj.name;
@@ -90,6 +113,8 @@ class User {
     // build a new User instance from the API response
     const newUser = new User(response.data.user);
 
+    console.log(`Username: ${newUser.username}, Password: ${newUser.password}`);
+
     // attach the token to the newUser instance for convenience
     newUser.loginToken = response.data.token;
 
@@ -119,6 +144,8 @@ class User {
 
     // attach the token to the newUser instance for convenience
     existingUser.loginToken = response.data.token;
+
+      // console.log(existingUser.loginToken);
 
     return existingUser;
   }
@@ -150,6 +177,70 @@ class User {
     existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
     return existingUser;
+  }
+
+  async isStoryFavorite(storyId){
+
+    // console.log("this.username", this.username);
+    // // console.log('Story ID: ', storyId);
+    // console.log("url: ", `${BASE_URL}/users/${this.username}`);
+    // console.log("token: ", this.loginToken);
+
+    const res = await axios.get(`${BASE_URL}/users/${this.username}`,{params: {token: this.loginToken}});
+
+    const userFavorites = res.data.user.favorites;
+// console.log
+    // console.log("res: ",res);
+
+    for(let userFavorite of userFavorites){
+
+      if(userFavorite.storyId==storyId){
+      //   console.log("user favorite: ", userFavorite.storyId);
+      // console.log("current Story: ", currentStory.storyId);
+      //   console.log("Post is user favorite");
+        return true;
+      }
+
+    }
+    return false;
+
+  }
+  async getStoryUsername(currentStory){
+    // console.log("this.username", this.username);
+    // console.log('Story ID: ', currentStory.storyId);
+    // console.log("url: ", `${BASE_URL}/users/${this.username}`);
+    // console.log("token: ", this.loginToken);
+
+    const res = await axios.get(`${BASE_URL}/stories/${currentStory.storyId}`,{params: {token: this.loginToken}});
+    storyUs
+
+    console.log( "story username: ",res.data.story.username);
+
+  }
+
+  async addFavorite(storyId){
+
+    // console.log("this.username", this.username);
+    // console.log('Story ID: ', storyId);
+    // console.log("url: ", `${BASE_URL}/users/${this.username}/favorites/${storyId}`);
+    // console.log("token: ", this.loginToken);
+
+    const response = await axios.post(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, {token:this.loginToken});
+    // console.log("res: ", response);
+  }
+
+  async removeFavorite(storyId){
+    // console.log("this.username", this.username);
+    // console.log('Story ID: ', storyId);
+    // console.log("url: ", `${BASE_URL}/users/${this.username}/favorites/${storyId}`);
+    // console.log("token: ", this.loginToken);
+    const response = await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, {params: {token:this.loginToken}});
+
+  }
+  async deleteStory(storyId){
+    const response = await axios.delete(`${BASE_URL}/stories/${storyId}`, {params: {token:this.loginToken}});
+
+
   }
 }
 
