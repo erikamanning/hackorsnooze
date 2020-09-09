@@ -135,7 +135,10 @@ $(async function() {
       generateFavoritesList(currentUser);
       generateOwnerStories(currentUser);
     }
-
+    else{
+      $navLogin.show();
+    }
+    
     return currentUser;
   }
 
@@ -153,7 +156,7 @@ $(async function() {
     $createAccountForm.trigger("reset");
 
     // show the stories
-    $allStoriesList.show();
+    location.reload();
 
     // set user profile
     setUserProfile();
@@ -417,11 +420,6 @@ $(async function() {
     return selectedStory;
   }
 
-  function addStoryToList(list,story){
-
-    list.append(story);
-  }
-
   function removeStoryFromList(storyId,list){
 
     list.find(`#${storyId}`).remove();
@@ -454,22 +452,42 @@ $(async function() {
     $allStoriesList.find(`#${storyId}`).remove();
   }
 
-  $navFavorites.on("click", async function(event){
+  $navFavorites.on("click", async function(){
 
     hideElements();
     $favoritedArticles.show();
+    if($favoritedArticles.children().length ==0){
+
+      setTimeout(()=>{
+
+        alert("No favorites yet. Add some!");
+  
+      },1);
+
+    }
+    
   });
 
-  $navMystories.on("click", async function(event){
+  $navMystories.on("click", async function(){
 
     hideElements();
     $myArticles.show();
+
+    if($myArticles.children().length ==0){
+
+      setTimeout(()=>{
+
+        alert("No articles yet. Add some!");
+  
+      },1);
+
+    }
     
   });
 
   /**
  * Event Handler for Clicking Submit*/
-  $navSubmit.on("click", function(evt) {
+  $navSubmit.on("click", function() {
 
     $userProfile.hide()
     $favoritedArticles.hide();
