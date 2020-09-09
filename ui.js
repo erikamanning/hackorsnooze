@@ -1,6 +1,8 @@
 
 $(async function() {
 
+  FAVORITE = "fas fa-star";
+  NOT_FAVORITE = 'far fa-star'; 
   
   
 
@@ -111,7 +113,6 @@ $(async function() {
 
     event.preventDefault();
     hideElements();
-    // await generateStories();
     $allStoriesList.show();
   });
 
@@ -135,6 +136,9 @@ $(async function() {
     if (currentUser) {
       setUserProfile();
       showNavForLoggedInUser();
+      generateFavoritesList(currentUser);
+      generateOwnerStories(currentUser);
+      // markAllListFavorites($allStoriesList);
     }
 
     return currentUser;
@@ -168,66 +172,120 @@ $(async function() {
    *  which will generate a storyListInstance. Then render it.
    */
 
+   console.log("User: ", currentUser);
+
   async function generateStories() {
+
     // get an instance of StoryList
     const storyListInstance = await StoryList.getStories();
+
     // update our global variable
     storyList = storyListInstance;
+
     // empty out that part of the page
     $allStoriesList.empty();
     $favoritedArticles.empty();
     $myArticles.empty();
-
+    
     // loop through all of our stories and generate HTML for them
     for (let story of storyList.stories) {
 
-      let favorited, userIsOwner, favorite, ownerArticle;
-      
+      // let isFavorite;
 
-      if(currentUser){
-
-        // console.log(story.username)
-        // console.log("Current user: ", currentUser)
-        favorited = await currentUser.isStoryFavorite(story.storyId);
-        userIsOwner = story.username == currentUser.username ? true: false;
-        // console.log(userIsOwner)
-        // console.log("hello?",);
-
-      }
-
-      const result = generateStoryHTML(story,favorited);
-      
+      // if(currentUser){
+      //   isFavorite = checkIfFavorite(story) ? FAVORITE : NOT_FAVORITE;
+      // }
+      const result = generateStoryHTML(story);
+      result.prepend(addFavoriteIcon(NOT_FAVORITE));
       $allStoriesList.append(result);
+    }
+  }
 
-      if(favorited){
+  function addFavoriteIcon(icon){
 
-        favorite = result.clone();
-        favorite.css("list-style-type","none");
-        $('#favorited-articles').append(favorite);
+    return `<span><i class="favorited ${icon}"></i></span>`;
+  }
+  function generateFavoritesList(user){
+
+    for(let story of user.favorites){
+
+      generateFavorite(story);
+    }
+  }
+  function generateFavorite(story){
+
+    const favoriteStory = generateStoryHTML(story);
+    favoriteStory.css("list-style-type","none");
+    favoriteStory.prepend(addFavoriteIcon(FAVORITE));
+    $('#favorited-articles').append(favoriteStory);
+  }
+
+  function generateOwnerStories(user){
+
+    for(let story of user.ownStories){
+
+      generateOwnerStory(story);
+      markAllListFavorites($ownStories)
+    }
+  }
+
+  function generateOwnerStory(story){
+
+    // console.log(checkIfFavorite(story))
+    const isFavorite = checkIfFavorite(story) ? FAVORITE : NOT_FAVORITE;
+    console.log("isFavorite: ",isFavorite);
+    const ownerStory = generateStoryHTML(story);
+    ownerStory.css("list-style-type","none");
+    ownerStory.prepend(addFavoriteIcon(isFavorite));
+    ownerStory.prepend($('<i class="deleteButton fas fa-trash-alt"></i>'));
+    $('#my-articles').append(ownerStory);
+
+  }
+
+  function checkIfFavorite(story){
+
+    let result =false;
+
+    for(let favorite of currentUser.favorites){
+
+      console.log("Current Favorite: ", favorite.storyId);
+      console.log("Story: ", story.storyId);
+
+      if(favorite.storyId==story.storyId){
+
+        result =  true;
       }
-      if(userIsOwner){
+    }
+    return result;
+  }
+  
+  function markAllListFavorites(list){
 
-        ownerArticle = result.clone();
-        ownerArticle.css("list-style-type","none");
-        ownerArticle.prepend($('<i class="deleteButton fas fa-trash-alt"></i>'));
-        $('#my-articles').append(ownerArticle);
+    for(let story of $(list).children()){
 
+      for(let favorite of currentUser.favorites){
+
+        if($(story).prop("id")==favorite.storyId){
+
+          // console.log("found favorite story!")
+          $(story).find('.favorited').removeClass("far");
+          $(story).find('.favorited').addClass("fas");
+        }
       }
     }
   }
+
   /**
    * A function to render HTML for an individual Story instance
    */
 
-  function generateStoryHTML(story,favorited) {
+  function generateStoryHTML(story) {
 
-    let hostName = getHostName(story.url);
-    const starFilled = favorited ? "fas" : "far";    
+    let hostName = getHostName(story.url);  
     
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}" data-user="${story.username}">
-      <span><i class="favorited fa-star ${starFilled}"></i></span>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
@@ -316,10 +374,12 @@ $(async function() {
     $author.val("");
     $title.val("");
     $url.val("");
-    
-    addStoryToList($allStoriesList, newPost);
-    $submitForm.hide();
 
+      
+    if(newPost){
+
+      location.reload(); 
+    }
   });
 
 
@@ -371,9 +431,9 @@ $(async function() {
 
   }
 
-  function addStoryToList(list,clone){
+  function addStoryToList(list,story){
 
-    list.append(clone);
+    list.prepend(story);
   }
   function removeStoryFromList(storyId,list){
 
@@ -412,17 +472,16 @@ $(async function() {
   $navFavorites.on("click", async function(event){
 
     hideElements();
-    // await generateStories();
     $favoritedArticles.show();
-
   });
 
   $navMystories.on("click", async function(event){
 
     hideElements();
-    // await generateStories();
     $myArticles.show();
+    
   });
+
   /**
  * Event Handler for Clicking Submit*/
   $navSubmit.on("click", function(evt) {

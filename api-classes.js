@@ -68,8 +68,8 @@ class StoryList {
       });
   
       return story;
-
   }
+
 }
 
 
@@ -205,6 +205,20 @@ class User {
     return false;
 
   }
+
+  async getFavorites(){
+
+    const res = await axios.get(`${BASE_URL}/users/${this.username}`,{params: {token:this.loginToken}});
+
+    console.log("Favorite Stories: ", res.data.user.favorites);
+
+    const favorites = res.data.user.favorites;
+    
+    return favorites;
+
+
+  }
+
   async getStoryUsername(currentStory){
     // console.log("this.username", this.username);
     // console.log('Story ID: ', currentStory.storyId);

@@ -50,3 +50,12 @@ curl -i \
 
         based on result append
 
+
+
+to do:
+
+
+- get rid of spans
+- get rid of unnecessary class functions
+- trash can gets brought over if favorite added from my stories list
+
