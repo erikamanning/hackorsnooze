@@ -66,6 +66,8 @@ class StoryList {
         updatedAt : response.data.story.updatedAt
   
       });
+
+      this.stories.push(story);
   
       return story;
   }

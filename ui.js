@@ -1,11 +1,6 @@
 
 $(async function() {
 
-  const FAVORITE = "fas fa-star";
-  const NOT_FAVORITE = 'far fa-star'; 
-  
-  
-
   // cache some selectors we'll be using quite a bit
   const $allStoriesList = $("#all-articles-list");
   const $submitForm = $("#submit-form");
@@ -27,6 +22,10 @@ $(async function() {
   const $userWelcome = $('#nav-welcome');
   const $navUserName = $('#nav-user-profile');
   const $userProfile = $('#user-profile');
+
+  // global icon constants
+  const FAVORITE = "fas fa-star";
+  const NOT_FAVORITE = 'far fa-star'; 
 
   // hide user profile
   $userProfile.hide();
@@ -58,7 +57,7 @@ $(async function() {
     syncCurrentUserToLocalStorage();
     loginAndSubmitForm();
   });
-  // console.log("User: ", currentUser);
+
   /**
    * Event listener for signing up.
    *  If successfully we will setup a new user instance
@@ -167,9 +166,6 @@ $(async function() {
    * A rendering function to call the StoryList.getStories static method,
    *  which will generate a storyListInstance. Then render it.
    */
-
-   console.log("User: ", currentUser);
-
   async function generateStories() {
 
     // get an instance of StoryList
@@ -202,6 +198,7 @@ $(async function() {
 
     return `<span><i class="favorited ${icon}"></i></span>`;
   }
+
   function generateFavoritesList(user){
 
     for(let story of user.favorites){
@@ -209,6 +206,7 @@ $(async function() {
       generateFavorite(story);
     }
   }
+
   function generateFavorite(story){
 
     const favoriteStory = generateStoryHTML(story);
@@ -241,9 +239,6 @@ $(async function() {
     let result=false;
 
     for(let favorite of currentUser.favorites){
-
-      // console.log("Current Favorite: ", favorite.storyId);
-      // console.log("Story: ", story.storyId);
 
       if(favorite.storyId==story.storyId){
 
@@ -339,10 +334,7 @@ $(async function() {
 
     event.preventDefault();
 
-    console.log($author.val());
-
-    const userStories = await StoryList.getStories();
-    await userStories.addStory(currentUser, {
+    const newPost = await storyList.addStory(currentUser, {
                               
       author: $author.val(),
       title:$title.val(),
@@ -353,8 +345,14 @@ $(async function() {
     $title.val("");
     $url.val("");
 
+
+    generateOwnerStory(newPost);
+    const newGenPost = generateStoryHTML(newPost);
+    newGenPost.prepend(addFavoriteIcon(NOT_FAVORITE));
+    $allStoriesList.prepend(newGenPost);
+    
+
     $submitForm.hide();
-      
   });
 
 
@@ -366,8 +364,6 @@ $(async function() {
       // declare variables
       const storyId =  $(event.target).parent().parent().prop("id");
       const favorited = await currentUser.isStoryFavorite(storyId);
-
-      // console.log("Story is favorite? : ",favorited);
 
       favoriteHandler(storyId,favorited,event);
     }
@@ -399,14 +395,13 @@ $(async function() {
         // add item to favorites list html
         const newStory = getStoryById(storyId);
         generateFavorite(newStory);
-        // addStoryToList($favoritedArticles,newStory);
 
         // send post request
         currentUser.addFavorite(storyId);
       }
 
   }
-console.log("Story List: ", storyList);
+
   function getStoryById(currentStoryId){
 
     let selectedStory;
@@ -421,18 +416,15 @@ console.log("Story List: ", storyList);
 
     return selectedStory;
   }
-  // console.log(getStoryById("60d1d3f0-f352-45c2-8bf8-5fc2ecf7c0dd"));
-
-
 
   function addStoryToList(list,story){
 
     list.append(story);
   }
+
   function removeStoryFromList(storyId,list){
 
     list.find(`#${storyId}`).remove();
-
   }
 
   function updateAllListFavoriteIcons(storyId, favorited){
@@ -452,8 +444,7 @@ console.log("Story List: ", storyList);
 
       $(list).find(`#${storyId}`).find('.favorited').removeClass("far");
       $(list).find(`#${storyId}`).find('.favorited').addClass("fas");
-    }
-    
+    } 
   }
 
   function deleteAll(storyId){
@@ -491,7 +482,7 @@ console.log("Story List: ", storyList);
     }
     else if($submitForm.is(":hidden")){
       $submitForm.show();
-    }    
+    }
   });
 
   $navUserName.on("click",function(){
@@ -503,7 +494,6 @@ console.log("Story List: ", storyList);
 
   $myArticles.on("click",'.deleteButton', async function(event){
 
-    // console.log("Parent ID: ",$(event.target).parent().prop("id"));
     const storyId = $(event.target).parent().prop("id");
     deleteAll(storyId);
     await currentUser.deleteStory(storyId);
