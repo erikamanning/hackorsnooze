@@ -28,11 +28,8 @@ $(async function() {
   const $navUserName = $('#nav-user-profile');
   const $userProfile = $('#user-profile');
 
+  // hide user profile
   $userProfile.hide();
-
-
-  // console.log("Submit form: ", $submitForm);
-// console.log($userOptions);
 
   // global storyList variable
   let storyList = null;
@@ -138,7 +135,6 @@ $(async function() {
       showNavForLoggedInUser();
       generateFavoritesList(currentUser);
       generateOwnerStories(currentUser);
-      // markAllListFavorites($allStoriesList);
     }
 
     return currentUser;
@@ -226,7 +222,6 @@ $(async function() {
     for(let story of user.ownStories){
 
       generateOwnerStory(story);
-      // markAllListFavorites($ownStories)
     }
   }
 
@@ -413,7 +408,7 @@ $(async function() {
 
   function addStoryToList(list,story){
 
-    list.prepend(story);
+    list.append(story);
   }
   function removeStoryFromList(storyId,list){
 
@@ -495,7 +490,4 @@ $(async function() {
     await currentUser.deleteStory(storyId);
 
   });
-
-
-  
 });
