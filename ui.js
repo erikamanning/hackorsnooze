@@ -1,8 +1,8 @@
 
 $(async function() {
 
-  FAVORITE = "fas fa-star";
-  NOT_FAVORITE = 'far fa-star'; 
+  const FAVORITE = "fas fa-star";
+  const NOT_FAVORITE = 'far fa-star'; 
   
   
 
@@ -190,13 +190,14 @@ $(async function() {
     // loop through all of our stories and generate HTML for them
     for (let story of storyList.stories) {
 
-      // let isFavorite;
+      let isFavorite;
 
-      // if(currentUser){
-      //   isFavorite = checkIfFavorite(story) ? FAVORITE : NOT_FAVORITE;
-      // }
+      if(currentUser){
+        isFavorite = checkIfFavorite(story) ? FAVORITE : NOT_FAVORITE;
+      }
+
       const result = generateStoryHTML(story);
-      result.prepend(addFavoriteIcon(NOT_FAVORITE));
+      result.prepend(addFavoriteIcon(isFavorite));
       $allStoriesList.append(result);
     }
   }
@@ -225,7 +226,7 @@ $(async function() {
     for(let story of user.ownStories){
 
       generateOwnerStory(story);
-      markAllListFavorites($ownStories)
+      // markAllListFavorites($ownStories)
     }
   }
 
@@ -244,7 +245,7 @@ $(async function() {
 
   function checkIfFavorite(story){
 
-    let result =false;
+    let result=false;
 
     for(let favorite of currentUser.favorites){
 
@@ -375,11 +376,12 @@ $(async function() {
     $title.val("");
     $url.val("");
 
+    $submitForm.hide();
       
-    if(newPost){
+    // if(newPost){
 
-      location.reload(); 
-    }
+    //   location.reload(); 
+    // }
   });
 
 
