@@ -242,8 +242,8 @@ $(async function() {
 
     for(let favorite of currentUser.favorites){
 
-      console.log("Current Favorite: ", favorite.storyId);
-      console.log("Story: ", story.storyId);
+      // console.log("Current Favorite: ", favorite.storyId);
+      // console.log("Story: ", story.storyId);
 
       if(favorite.storyId==story.storyId){
 
@@ -378,7 +378,7 @@ $(async function() {
     }
   });
 
-  function favoriteHandler(storyId,favorited,event){
+  function favoriteHandler(storyId,favorited){
 
       if(favorited){
 
@@ -397,14 +397,33 @@ $(async function() {
         updateAllListFavoriteIcons(storyId, favorited);
 
         // add item to favorites list html
-        const clone = $(event.target).parent().parent().clone();
-        addStoryToList($favoritedArticles,clone);
+        const newStory = getStoryById(storyId);
+        generateFavorite(newStory);
+        // addStoryToList($favoritedArticles,newStory);
 
         // send post request
         currentUser.addFavorite(storyId);
       }
 
   }
+console.log("Story List: ", storyList);
+  function getStoryById(currentStoryId){
+
+    let selectedStory;
+
+    for(let story of storyList.stories){
+
+      if(story.storyId == currentStoryId){
+
+        selectedStory = story;
+      }
+    }
+
+    return selectedStory;
+  }
+  // console.log(getStoryById("60d1d3f0-f352-45c2-8bf8-5fc2ecf7c0dd"));
+
+
 
   function addStoryToList(list,story){
 
